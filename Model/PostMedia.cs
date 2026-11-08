@@ -13,7 +13,7 @@ namespace netgram.Models
         public string CloudinaryPublicId { get; set; } = string.Empty;
 
         [Required]
-        public string MediaType { get; set; }
+        public string MediaType { get; set; }=string.Empty;
 
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
 
