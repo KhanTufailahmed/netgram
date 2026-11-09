@@ -2,10 +2,30 @@ using netgram.Data;
 using Microsoft.EntityFrameworkCore;
 using netgram.Models;
 using Microsoft.AspNetCore.Identity;
+using DotNetEnv;
+using CloudinaryDotNet;
+
+Env.Load();
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+var cloudinarySettings = new CloudinarySettings
+{
+    CloudName = Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME") ?? "",
+    ApiKey = Environment.GetEnvironmentVariable("CLOUDINARY_API_KEY") ?? "",
+    ApiSecret = Environment.GetEnvironmentVariable("CLOUDINARY_API_SECRET") ?? ""
+};
+
+builder.Services.AddSingleton(cloudinarySettings);
+
+var account = new CloudinaryDotNet.Account(
+   cloudinarySettings.CloudName,
+   cloudinarySettings.ApiKey,
+   cloudinarySettings.ApiSecret
+);
+var cloudinary = new CloudinaryDotNet.Cloudinary(account);
+builder.Services.AddSingleton(cloudinary);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
