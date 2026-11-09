@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using netgram.Data;
 using netgram.Models;
+using netgram.Services;
 using netgram.ViewModel;
 
 namespace netgram.Controllers
@@ -56,6 +57,8 @@ namespace netgram.Controllers
             {
                 return NotFound();
             }
+
+            post.Content = PostContentSanitizer.Sanitize(post.Content);
 
             var userId = _userManager.GetUserId(User);
             var userHasLiked = userId != null &&
@@ -120,7 +123,7 @@ namespace netgram.Controllers
             var post = new Post
             {
                 Title = model.Title,
-                Content = model.Content,
+                Content = PostContentSanitizer.Sanitize(model.Content),
                 CategoryId = model.CategoryId,
                 Status = model.Status,
                 UserId = userId
@@ -216,7 +219,7 @@ namespace netgram.Controllers
             }
 
             post.Title = model.Title;
-            post.Content = model.Content;
+            post.Content = PostContentSanitizer.Sanitize(model.Content);
             post.CategoryId = model.CategoryId;
             post.Status = model.Status;
             post.UpdatedAt = DateTime.UtcNow;

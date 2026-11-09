@@ -1,4 +1,5 @@
 @model IEnumerable<netgram.Models.Post>
+@using netgram.Services
 @{
     ViewData["Title"] = "Posts";
 }
@@ -27,8 +28,11 @@ else
                         <p class="text-muted small mb-2">
                             By @(post.User?.DisplayName ?? "Unknown author") in @(post.Category?.Name ?? "Uncategorized")
                         </p>
+                        @{
+                            var contentPreview = PostContentSanitizer.ToPlainText(post.Content);
+                        }
                         <p class="card-text">
-                            @(post.Content.Length > 180 ? post.Content.Substring(0, 180) + "..." : post.Content)
+                            @(contentPreview.Length > 180 ? contentPreview.Substring(0, 180) + "..." : contentPreview)
                         </p>
                         <div class="mb-3">
                             @foreach (var postTag in post.PostTags)
