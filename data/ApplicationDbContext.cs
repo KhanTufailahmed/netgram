@@ -23,6 +23,8 @@ namespace netgram.Data
 
         public DbSet<PostMedia> PostMedias { get; set; }
 
+        public DbSet<PostLike> PostLikes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -57,6 +59,20 @@ namespace netgram.Data
                 .HasOne(pt => pt.Tag)
                 .WithMany(t => t.PostTags)
                 .HasForeignKey(pt => pt.TagId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PostLike>().HasKey(pl => new { pl.PostId, pl.UserId });
+
+            modelBuilder.Entity<PostLike>()
+                .HasOne(pl => pl.Post)
+                .WithMany(p => p.Likes)
+                .HasForeignKey(pl => pl.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PostLike>()
+                .HasOne(pl => pl.User)
+                .WithMany(u => u.Likes)
+                .HasForeignKey(pl => pl.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
 

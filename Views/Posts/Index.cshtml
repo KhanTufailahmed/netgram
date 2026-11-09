@@ -1,0 +1,50 @@
+@model IEnumerable<netgram.Models.Post>
+@{
+    ViewData["Title"] = "Posts";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Published Posts</h1>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a asp-action="Create" class="btn btn-primary">Create Post</a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No published posts are available yet.</div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var post in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="h4 card-title">@post.Title</h2>
+                        <p class="text-muted small mb-2">
+                            By @(post.User?.DisplayName ?? "Unknown author") in @(post.Category?.Name ?? "Uncategorized")
+                        </p>
+                        <p class="card-text">
+                            @(post.Content.Length > 180 ? post.Content.Substring(0, 180) + "..." : post.Content)
+                        </p>
+                        <div class="mb-3">
+                            @foreach (var postTag in post.PostTags)
+                            {
+                                <span class="badge bg-secondary me-1">@postTag.Tag?.Name</span>
+                            }
+                        </div>
+                        <div class="text-muted small mt-auto mb-3">
+                            @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy") |
+                            @post.Likes.Count likes |
+                            @post.Comments.Count comments
+                        </div>
+                        <a asp-action="Details" asp-route-id="@post.Id" class="btn btn-outline-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

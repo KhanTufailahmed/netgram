@@ -1,0 +1,60 @@
+@model netgram.ViewModel.CreatePostViewModel
+@{
+    ViewData["Title"] = "Create Post";
+    var categories = ViewBag.Categories as List<netgram.Models.Category> ?? new List<netgram.Models.Category>();
+    var tags = ViewBag.Tags as List<netgram.Models.Tag> ?? new List<netgram.Models.Tag>();
+}
+
+<h1>Create Post</h1>
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label"></label>
+        <textarea asp-for="Content" class="form-control" rows="10"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label"></label>
+        <select asp-for="CategoryId" class="form-select">
+            <option value="">Select a category</option>
+            @foreach (var category in categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-select">
+            <option value="Draft">Draft</option>
+            <option value="Published">Published</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <fieldset class="mb-3">
+        <legend class="fs-6">Tags</legend>
+        @if (!tags.Any())
+        {
+            <p class="text-muted">No tags are available.</p>
+        }
+        @foreach (var tag in tags)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="TagIds" value="@tag.Id" id="tag-@tag.Id" />
+                <label class="form-check-label" for="tag-@tag.Id">@tag.Name</label>
+            </div>
+        }
+    </fieldset>
+    <button type="submit" class="btn btn-primary">Save Post</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

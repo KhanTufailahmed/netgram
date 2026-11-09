@@ -35,11 +35,13 @@ namespace netgram.Models
         [ForeignKey(nameof(CategoryId))]
         public Category? Category { get; set; }
 
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
-        public ICollection<PostTag> PostTags { get; set; }
+        public ICollection<PostTag> PostTags { get; set; } = new List<PostTag>();
 
-        public ICollection<PostMedia> Media { get; set; }
+        public ICollection<PostMedia> Media { get; set; } = new List<PostMedia>();
+
+        public ICollection<PostLike> Likes { get; set; } = new List<PostLike>();
 
     }
 }

@@ -321,6 +321,24 @@ namespace netgram.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("netgram.Models.PostLike", b =>
+                {
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PostId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PostLikes");
+                });
+
             modelBuilder.Entity("netgram.Models.PostMedia", b =>
                 {
                     b.Property<int>("Id")
@@ -475,6 +493,25 @@ namespace netgram.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("netgram.Models.PostLike", b =>
+                {
+                    b.HasOne("netgram.Models.Post", "Post")
+                        .WithMany("Likes")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("netgram.Models.ApplicationUser", "User")
+                        .WithMany("Likes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("netgram.Models.PostMedia", b =>
                 {
                     b.HasOne("netgram.Models.Post", "Post")
@@ -509,6 +546,8 @@ namespace netgram.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Likes");
+
                     b.Navigation("Posts");
                 });
 
@@ -520,6 +559,8 @@ namespace netgram.Migrations
             modelBuilder.Entity("netgram.Models.Post", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Likes");
 
                     b.Navigation("Media");
 

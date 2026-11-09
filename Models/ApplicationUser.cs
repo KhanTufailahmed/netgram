@@ -11,5 +11,7 @@ namespace netgram.Models
         public ICollection<Post> Posts { get; set; }=new List<Post>();
 
         public ICollection<Comment> Comments { get; set; }=new List<Comment>();
+
+        public ICollection<PostLike> Likes { get; set; } = new List<PostLike>();
     }
 }

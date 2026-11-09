@@ -1,0 +1,104 @@
+@model netgram.ViewModel.PostDetailsViewModel
+@{
+    ViewData["Title"] = Model.Post.Title;
+    var post = Model.Post;
+}
+
+<article>
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h1>@post.Title</h1>
+            <p class="text-muted">
+                By @(post.User?.DisplayName ?? "Unknown author") in @(post.Category?.Name ?? "Uncategorized")
+                on @post.CreatedAt.ToLocalTime().ToString("dd MMMM yyyy")
+            </p>
+        </div>
+        @if (Model.IsAuthor)
+        {
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@post.Id" class="btn btn-outline-secondary">Edit</a>
+                <form asp-action="Delete" asp-route-id="@post.Id" method="post">
+                    <button type="submit" class="btn btn-outline-danger"
+                            onclick="return confirm('Delete this post?');">Delete</button>
+                </form>
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        @foreach (var postTag in post.PostTags)
+        {
+            <span class="badge bg-secondary me-1">@postTag.Tag?.Name</span>
+        }
+    </div>
+
+    <div class="mb-4" style="white-space: pre-wrap;">@post.Content</div>
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            @if (Model.UserHasLiked)
+            {
+                <form asp-controller="Likes" asp-action="Unlike" asp-route-id="@post.Id" method="post">
+                    <button type="submit" class="btn btn-danger">Unlike</button>
+                </form>
+            }
+            else
+            {
+                <form asp-controller="Likes" asp-action="Like" asp-route-id="@post.Id" method="post">
+                    <button type="submit" class="btn btn-outline-danger">Like</button>
+                </form>
+            }
+        }
+        <span>@post.Likes.Count likes</span>
+        <span>@post.Comments.Count comments</span>
+    </div>
+</article>
+
+<hr />
+<h2 class="h4">Comments</h2>
+
+@if (TempData["CommentError"] is string commentError)
+{
+    <div class="alert alert-danger">@commentError</div>
+}
+
+@if (!post.Comments.Any())
+{
+    <p class="text-muted">Be the first to comment.</p>
+}
+else
+{
+    foreach (var comment in post.Comments.OrderBy(comment => comment.CreatedAt))
+    {
+        <div class="border rounded p-3 mb-2">
+            <div class="d-flex justify-content-between">
+                <strong>@(comment.User?.DisplayName ?? "Unknown user")</strong>
+                <small class="text-muted">@comment.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
+            </div>
+            <p class="mb-2 mt-2" style="white-space: pre-wrap;">@comment.Content</p>
+            @if (User.Identity?.IsAuthenticated == true && comment.UserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+            {
+                <form asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id" method="post">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            }
+        </div>
+    }
+}
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <form asp-controller="Comments" asp-action="Create" method="post" class="mt-4">
+        <input type="hidden" name="PostId" value="@post.Id" />
+        <div class="mb-3">
+            <label for="Content" class="form-label">Add a comment</label>
+            <textarea name="Content" id="Content" class="form-control" rows="3" maxlength="1000" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Comment</button>
+    </form>
+}
+else
+{
+    <p><a asp-controller="Account" asp-action="Login">Login</a> to leave a comment or like this post.</p>
+}
